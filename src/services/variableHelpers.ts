@@ -1,21 +1,38 @@
-import { AdHocFiltersVariable, sceneGraph, SceneObject, SceneVariable } from '@grafana/scenes';
+import { AdHocFiltersVariable, sceneGraph, SceneObject } from '@grafana/scenes';
 
 import { IndexScene } from '../Components/IndexScene/IndexScene';
 import { ServiceScene } from '../Components/ServiceScene/ServiceScene';
 import { CustomConstantVariable } from './CustomConstantVariable';
 import { FilterOp } from './filterTypes';
+import { LabelFiltersVariable } from './LabelFiltersVariable';
 import { isOperatorInclusive } from './operatorHelpers';
 import { includeOperators, numericOperators, operators } from './operators';
 import { getRouteParams } from './routing';
 import { getLabelsVariable } from './variableGetters';
 import { SERVICE_NAME, SERVICE_UI_LABEL, VAR_LABELS } from './variables';
 
-export function getVariablesThatCanBeCleared(indexScene: IndexScene) {
+type ClearableVariable = AdHocFiltersVariable | CustomConstantVariable | LabelFiltersVariable;
+export function getVariablesThatCanBeCleared(indexScene: IndexScene): ClearableVariable[] {
   const variables = sceneGraph.getVariables(indexScene);
-  let variablesToClear: SceneVariable[] = [];
+  let variablesToClear: ClearableVariable[] = [];
 
   for (const variable of variables.state.variables) {
-    if (variable instanceof AdHocFiltersVariable && variable.state.filters.length) {
+    if (variable.state.name === VAR_LABELS && variable instanceof LabelFiltersVariable) {
+      if (
+        !variable.state.filters.every((filter) =>
+          variable
+            .getReadonlyFilters()
+            ?.find(
+              (readonlyFilter) =>
+                readonlyFilter.key === filter.key &&
+                readonlyFilter.value === filter.value &&
+                readonlyFilter.operator === filter.operator
+            )
+        )
+      ) {
+        variablesToClear.push(variable);
+      }
+    } else if (variable instanceof AdHocFiltersVariable && variable.state.filters.length) {
       variablesToClear.push(variable);
     }
     if (variable instanceof CustomConstantVariable && variable.state.value && variable.state.name !== 'logsFormat') {
@@ -35,14 +52,24 @@ export function clearVariables(sceneRef: SceneObject) {
   const variablesToClear = getVariablesThatCanBeCleared(indexScene);
 
   variablesToClear.forEach((variable) => {
-    if (variable instanceof AdHocFiltersVariable && variable.state.key === 'adhoc_service_filter') {
+    if (variable instanceof LabelFiltersVariable) {
       let { labelName } = getRouteParams(sceneRef);
       // labelName is the label that exists in the URL, which is "service" not "service_name"
       if (labelName === SERVICE_UI_LABEL) {
         labelName = SERVICE_NAME;
       }
+      const readonlyFilters = variable.getReadonlyFilters();
       variable.setState({
-        filters: variable.state.filters.filter((filter) => filter.key === labelName),
+        filters: variable.state.filters.filter(
+          (filter) =>
+            filter.key === labelName ||
+            readonlyFilters?.find(
+              (readonlyFilter) =>
+                readonlyFilter.key === filter.key &&
+                readonlyFilter.value === filter.value &&
+                readonlyFilter.operator === filter.operator
+            )
+        ),
       });
     } else if (variable instanceof AdHocFiltersVariable) {
       variable.setState({
