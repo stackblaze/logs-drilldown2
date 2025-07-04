@@ -14,6 +14,10 @@ interface Props {
   onScrollToBottomClick?(): void;
   onScrollToTopClick?(): void;
   onSortOrderChange(newOrder: LogsSortOrder): void;
+  onToggleLabelsClick?(visible: boolean): void;
+  onToggleStructuredMetadataClick?(visible: boolean): void;
+  showLabels?: boolean;
+  showMetadata?: boolean;
   sortOrder: LogsSortOrder;
 }
 
@@ -24,6 +28,10 @@ export const LogListControls = ({
   onScrollToBottomClick,
   onScrollToTopClick,
   onSortOrderChange,
+  onToggleLabelsClick,
+  onToggleStructuredMetadataClick,
+  showLabels,
+  showMetadata,
   sortOrder,
 }: Props) => {
   const styles = useStyles2(getStyles);
@@ -51,6 +59,24 @@ export const LogListControls = ({
         tooltip={sortOrder === LogsSortOrder.Descending ? 'Newest logs first' : 'Oldest logs first'}
         size="lg"
       />
+      {showMetadata !== undefined && onToggleStructuredMetadataClick && (
+        <IconButton
+          name="document-info"
+          className={showMetadata ? styles.controlButtonActive : styles.controlButton}
+          onClick={() => onToggleStructuredMetadataClick(!showMetadata)}
+          tooltip={showMetadata ? 'Hide structured metadata' : 'Show structured metadata'}
+          size="lg"
+        />
+      )}
+      {showLabels !== undefined && onToggleLabelsClick && (
+        <IconButton
+          name="key-skeleton-alt"
+          className={showLabels ? styles.controlButtonActive : styles.controlButton}
+          onClick={() => onToggleLabelsClick(!showLabels)}
+          tooltip={showLabels ? 'Hide Labels' : 'Show labels'}
+          size="lg"
+        />
+      )}
       {onManageColumnsClick && (
         <IconButton
           name="columns"
@@ -87,6 +113,22 @@ export const LogListControls = ({
 const getStyles = (theme: GrafanaTheme2) => {
   return {
     controlButton: css({
+      color: theme.colors.text.secondary,
+      height: theme.spacing(2),
+      margin: 0,
+    }),
+    controlButtonActive: css({
+      '&:after': {
+        backgroundImage: theme.colors.gradients.brandHorizontal,
+        borderRadius: theme.shape.radius.default,
+        bottom: theme.spacing(-1),
+        content: '" "',
+        display: 'block',
+        height: 2,
+        opacity: 1,
+        position: 'absolute',
+        width: '95%',
+      },
       color: theme.colors.text.secondary,
       height: theme.spacing(2),
       margin: 0,
