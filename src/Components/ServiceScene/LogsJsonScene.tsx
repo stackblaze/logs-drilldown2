@@ -1,5 +1,7 @@
 import React from 'react';
 
+import { isNumber } from 'lodash';
+
 import {
   DataFrame,
   Field,
@@ -14,6 +16,7 @@ import { locationService } from '@grafana/runtime';
 import {
   AdHocFiltersVariable,
   AdHocFilterWithLabels,
+  SceneDataProvider,
   SceneDataState,
   sceneGraph,
   SceneObjectBase,
@@ -56,6 +59,7 @@ import { LABEL_NAME_INVALID_CHARS } from '../../services/labels';
 import { narrowLogsSortOrder } from '../../services/narrowing';
 import { addCurrentUrlToHistory } from '../../services/navigate';
 import { getPrettyQueryExpr } from '../../services/scenes';
+import { copyText } from '../../services/text';
 import {
   getAdHocFiltersVariable,
   getFieldsVariable,
@@ -72,6 +76,7 @@ import {
   VAR_LEVELS,
   VAR_METADATA,
 } from '../../services/variables';
+import CopyToClipboardButton from '../Buttons/CopyToClipboardButton';
 import { PanelMenu } from '../Panels/PanelMenu';
 import { addToFilters, FilterType, InterpolatedFilterType } from './Breakdowns/AddToFiltersButton';
 import { NoMatchingLabelsScene } from './Breakdowns/NoMatchingLabelsScene';
@@ -517,6 +522,10 @@ export class LogsJsonScene extends SceneObjectBase<LogsJsonSceneState> {
     );
   };
 
+  public renderCopyToClipboardButton(keyPath: KeyPath) {
+    return <CopyToClipboardButton onClick={() => copyLogLine(keyPath, sceneGraph.getData(this))} />;
+  }
+
   /**
    * Gets filter buttons for a nested JSON node
    */
@@ -758,3 +767,13 @@ export class LogsJsonScene extends SceneObjectBase<LogsJsonSceneState> {
     }
   }
 }
+
+const copyLogLine = (keyPath: KeyPath, $data: SceneDataProvider) => {
+  const logLineIndex = keyPath[0];
+  const dataFrame = getLogsPanelFrame($data.state.data);
+  const lineField = dataFrame?.fields.find((f) => isLogLineField(f.name));
+  if (isNumber(logLineIndex) && lineField) {
+    const line = lineField.values[logLineIndex];
+    copyText(line.toString());
+  }
+};

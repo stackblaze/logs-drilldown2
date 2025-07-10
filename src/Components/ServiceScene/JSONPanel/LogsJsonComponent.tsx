@@ -166,6 +166,7 @@ export default function LogsJsonComponent({ model }: SceneComponentProps<LogsJso
                     itemType={itemType}
                     data={data}
                     nodeType={nodeType}
+                    model={model}
                   />
                 )}
                 valueRenderer={(valueAsString, _, ...keyPath) => (
@@ -278,6 +279,8 @@ const getStyles = (theme: GrafanaTheme2, showHighlight: boolean, wrapLogMessage:
         left: 0;
         background: ${theme.colors.background.primary};
         z-index: 1;
+        display: flex;
+        align-items: center;
       }
     `,
   };
