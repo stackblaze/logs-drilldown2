@@ -35,6 +35,7 @@ import {
   isLabelsField,
   isLabelTypesField,
   isLogLineField,
+  isLogsIdField,
 } from '../../services/fields';
 import { LabelType } from '../../services/fieldsTypes';
 import { addJsonParserFieldValue, getJsonKey, LABELS_TO_REMOVE } from '../../services/filters';
@@ -53,7 +54,7 @@ import { LABEL_NAME_INVALID_CHARS } from '../../services/labels';
 import { narrowLogsSortOrder } from '../../services/narrowing';
 import { addCurrentUrlToHistory } from '../../services/navigate';
 import { getPrettyQueryExpr } from '../../services/scenes';
-import { copyText } from '../../services/text';
+import { copyText, generateLogShortlink } from '../../services/text';
 import {
   getAdHocFiltersVariable,
   getLineFormatVariable,
@@ -399,8 +400,28 @@ export class LogsJsonScene extends SceneObjectBase<LogsJsonSceneState> {
     );
   };
 
-  public renderCopyToClipboardButton(keyPath: KeyPath) {
-    return <CopyToClipboardButton onClick={() => copyLogLine(keyPath, sceneGraph.getData(this))} />;
+  private getLinkToLog(keyPath: KeyPath) {
+    const timeRange = sceneGraph.getTimeRange(this).state.value;
+    const dataFrame = this.state.rawFrame;
+    const idField: Field<string> | undefined = dataFrame?.fields.find((f) => isLogsIdField(f.name));
+    const logLineIndex = keyPath[0];
+    if (!isNumber(logLineIndex)) {
+      const error = Error('Invalid line index');
+      logger.error(error, { msg: 'Error getting log line index' });
+      throw error;
+    }
+    const logId = idField?.values[logLineIndex];
+    const logLineLink = generateLogShortlink('selectedLine', { id: logId, row: logLineIndex }, timeRange);
+    copyText(logLineLink);
+  }
+
+  public renderLogLineActionButtons(keyPath: KeyPath, model: LogsJsonScene) {
+    return (
+      <>
+        <CopyToClipboardButton onClick={() => copyLogLine(keyPath, sceneGraph.getData(this))} />
+        <CopyToClipboardButton type={'share-alt'} onClick={() => this.getLinkToLog(keyPath)} />
+      </>
+    );
   }
 
   /**
