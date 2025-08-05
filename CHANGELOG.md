@@ -1,5 +1,17 @@
 # Changelog
 
+## 1.0.25
+
+##### New Features
+
+* **fields:**  field name view (#1374) (79378a18)
+
+##### Bug Fixes
+
+* **assistant:**  move `getObservablePluginLinks` to `@grafana/assistant` package (#1477) (1cbbe3d9)
+*  prevent runtime error in Grafana 11.6 from crashing in Drilldown 1.0.24 (#1475) (a0b6fca7)
+
+
 ## 1.0.24
 
 ##### Chores
