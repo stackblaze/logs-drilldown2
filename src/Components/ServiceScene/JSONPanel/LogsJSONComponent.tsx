@@ -4,10 +4,10 @@ import { css } from '@emotion/css';
 
 import { colorManipulator, FieldType, GrafanaTheme2 } from '@grafana/data';
 import { AdHocFilterWithLabels, SceneComponentProps, sceneGraph } from '@grafana/scenes';
-import { Alert, Badge, PanelChrome, useStyles2 } from '@grafana/ui';
+import { Alert, PanelChrome, useStyles2 } from '@grafana/ui';
 
 import { NoMatchingLabelsScene } from '../Breakdowns/NoMatchingLabelsScene';
-import { JSONVizRootName, JSONLogsScene } from '../JSONLogsScene';
+import { JSONLogsScene, JSONVizRootName } from '../JSONLogsScene';
 import LabelRenderer from '../JSONPanel/LabelRenderer';
 import ValueRenderer from '../JSONPanel/ValueRenderer';
 import { LogListControls } from '../LogListControls';
@@ -138,11 +138,7 @@ export default function LogsJSONComponent({ model }: SceneComponentProps<JSONLog
         showMenuAlways={true}
         statusMessage={$data.state.data?.errors?.[0].message}
         loadingState={$data.state.data?.state}
-        title={
-          <>
-            JSON <Badge color={'blue'} text={'Experimental'} />
-          </>
-        }
+        title={'JSON'}
         menu={menu ? <menu.Component model={menu} /> : undefined}
         actions={<LogsPanelHeaderActions vizType={visualizationType} onChange={logsListScene.setVisualizationType} />}
       >
