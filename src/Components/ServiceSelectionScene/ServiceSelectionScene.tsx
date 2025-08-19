@@ -76,12 +76,7 @@ import {
   unwrapWildcardSearch,
   wrapWildcardSearch,
 } from 'services/query';
-import {
-  addTabToLocalStorage,
-  getDisplayedFieldsForLabelValue,
-  getFavoriteLabelValuesFromStorage,
-  getServiceSelectionPageCount,
-} from 'services/store';
+import { addTabToLocalStorage, getFavoriteLabelValuesFromStorage, getServiceSelectionPageCount } from 'services/store';
 import {
   EXPLORATION_DS,
   LEVEL_VARIABLE_VALUE,
@@ -567,7 +562,6 @@ export class ServiceSelectionScene extends SceneObjectBase<ServiceSelectionScene
         .setOption('showTime', true)
         .setOption('enableLogDetails', false)
         .setOption('fontSize', 'small')
-        .setOption('displayedFields', getDisplayedFieldsForLabelValue(this, labelName, labelValue))
         // @ts-expect-error Requires Grafana 12.2
         .setOption('noInteractions', true)
         .build(),
