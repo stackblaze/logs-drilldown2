@@ -1,4 +1,4 @@
-import { createContext as createAssistantContext, ItemDataType, providePageContext } from '@grafana/assistant';
+import { createAssistantContextItem, providePageContext } from '@grafana/assistant';
 import { SceneObject } from '@grafana/scenes';
 
 import { getLokiDatasource } from './scenes';
@@ -16,10 +16,8 @@ export const updateAssistantContext = async (
   }
 
   contexts.push(
-    createAssistantContext(ItemDataType.Datasource, {
-      datasourceName: ds.name,
+    createAssistantContextItem('datasource', {
       datasourceUid: ds.uid,
-      datasourceType: ds.type,
     })
   );
 
@@ -27,9 +25,8 @@ export const updateAssistantContext = async (
   if (labelsVar.state.filters.length > 0) {
     contexts.push(
       ...labelsVar.state.filters.map((filter) =>
-        createAssistantContext(ItemDataType.LabelValue, {
+        createAssistantContextItem('label_value', {
           datasourceUid: ds.uid,
-          datasourceType: ds.type,
           labelName: filter.key,
           labelValue: filter.value,
         })
