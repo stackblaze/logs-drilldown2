@@ -20,7 +20,7 @@ import {
   SceneVariableValueChangedEvent,
   VariableDependencyConfig,
 } from '@grafana/scenes';
-import { VariableHide } from '@grafana/schema';
+import { LogsSortOrder, VariableHide } from '@grafana/schema';
 import { LoadingPlaceholder } from '@grafana/ui';
 
 import { plugin } from '../../module';
@@ -55,10 +55,13 @@ import { LEVELS_VARIABLE_SCENE_KEY, LevelsVariableScene } from '../IndexScene/Le
 import { ShowLogsButtonScene } from '../IndexScene/ShowLogsButtonScene';
 import { ActionBarScene } from './ActionBarScene';
 import { breakdownViewsDefinitions, valueBreakdownViews } from './BreakdownViews';
+import { getLogsPanelSortOrderFromURL } from './LogOptionsScene';
 import { LogsListScene } from './LogsListScene';
 import { drilldownLabelUrlKey, pageSlugUrlKey } from './ServiceSceneConstants';
+import { LokiQueryDirection } from 'services/lokiQuery';
 import { getQueryRunner, getResourceQueryRunner } from 'services/panel';
 import { buildDataQuery, buildResourceQuery } from 'services/query';
+import { getLogOption, getMaxLines } from 'services/store';
 import {
   DETECTED_FIELD_VALUES_EXPR,
   EMPTY_VARIABLE_VALUE,
@@ -159,7 +162,7 @@ export class ServiceScene extends SceneObjectBase<ServiceSceneState> {
     >
   ) {
     super({
-      $data: getServiceSceneQueryRunner(),
+      $data: undefined,
       $detectedFieldsData: getDetectedFieldsQueryRunner(),
       $detectedLabelsData: getDetectedLabelsQueryRunner(),
       $logsCount: getLogCountQueryRunner(),
@@ -404,6 +407,11 @@ export class ServiceScene extends SceneObjectBase<ServiceSceneState> {
   private onActivate() {
     if (!this.state.body) {
       this.setState({ body: this.buildGraphScene() });
+    }
+    if (!this.state.$data) {
+      this.setState({
+        $data: getLogsQueryQueryRunner(this),
+      });
     }
     // Hide show logs button
     const showLogsButton = sceneGraph.findByKeyAndType(this, showLogsButtonSceneKey, ShowLogsButtonScene);
@@ -665,11 +673,11 @@ export class ServiceScene extends SceneObjectBase<ServiceSceneState> {
     });
   }
 
-  private resetBodyAndData() {
+  private resetBodyAndData = () => {
     let stateUpdate: Partial<ServiceSceneState> = {};
 
     if (!this.state.$data) {
-      stateUpdate.$data = getServiceSceneQueryRunner();
+      stateUpdate.$data = getLogsQueryQueryRunner(this);
     }
 
     if (!this.state.$patternsData) {
@@ -695,7 +703,7 @@ export class ServiceScene extends SceneObjectBase<ServiceSceneState> {
     if (Object.keys(stateUpdate).length) {
       this.setState(stateUpdate);
     }
-  }
+  };
 
   private buildGraphScene() {
     return new SceneFlexLayout({
@@ -799,8 +807,20 @@ function getDetectedFieldsQueryRunner() {
   );
 }
 
-function getServiceSceneQueryRunner() {
-  return getQueryRunner([buildDataQuery(LOG_STREAM_SELECTOR_EXPR, { refId: LOGS_PANEL_QUERY_REFID })]);
+function getLogsQueryQueryRunner(sceneRef: SceneObject) {
+  const query = {
+    ...buildDataQuery(LOG_STREAM_SELECTOR_EXPR, { refId: LOGS_PANEL_QUERY_REFID }),
+    get direction() {
+      const sortOrder =
+        getLogsPanelSortOrderFromURL() || getLogOption<LogsSortOrder>('sortOrder', LogsSortOrder.Descending);
+      return sortOrder === LogsSortOrder.Descending ? LokiQueryDirection.Backward : LokiQueryDirection.Forward;
+    },
+    get maxLines() {
+      return getMaxLines(sceneRef);
+    },
+  };
+
+  return getQueryRunner([query], undefined);
 }
 
 function getLogCountQueryRunner() {

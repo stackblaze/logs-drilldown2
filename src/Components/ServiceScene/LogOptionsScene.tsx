@@ -158,6 +158,5 @@ const getStyles = (theme: GrafanaTheme2) => ({
     alignItems: 'center',
     display: 'flex',
     gap: theme.spacing(1),
-    marginTop: theme.spacing(0.5),
   }),
 });
