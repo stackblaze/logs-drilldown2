@@ -3,16 +3,11 @@ import React from 'react';
 import { css, cx } from '@emotion/css';
 
 import { GrafanaTheme2 } from '@grafana/data';
-import { t } from '@grafana/i18n';
 import { useChromeHeaderHeight } from '@grafana/runtime';
 import { SceneComponentProps, SceneFlexLayout, sceneGraph, SceneObjectBase, SceneObjectState } from '@grafana/scenes';
-import { ToolbarButton, useStyles2 } from '@grafana/ui';
+import { useStyles2 } from '@grafana/ui';
 
-import {
-  getCollapsibleFiltersState,
-  getJsonParserVariableVisibility,
-  setCollapsibleFiltersState,
-} from '../../services/store';
+import { getJsonParserVariableVisibility } from '../../services/store';
 import { AppliedPattern } from '../../services/variables';
 import { EmbeddedLinkScene } from '../EmbeddedLogsExploration/EmbeddedLinkScene';
 import { CustomVariableValueSelectors } from './CustomVariableValueSelectors';
@@ -28,16 +23,12 @@ import { PatternControls } from './PatternControls';
 
 type HeaderPosition = 'relative' | 'sticky';
 interface VariableLayoutSceneState extends SceneObjectState {
-  collapsed?: boolean;
   embeddedLink?: EmbeddedLinkScene;
   position: HeaderPosition;
 }
 export class VariableLayoutScene extends SceneObjectBase<VariableLayoutSceneState> {
   constructor(props: VariableLayoutSceneState) {
-    super({
-      ...props,
-      collapsed: getCollapsibleFiltersState(),
-    });
+    super(props);
 
     this.addActivationHandler(this.onActivate.bind(this));
   }
@@ -51,14 +42,6 @@ export class VariableLayoutScene extends SceneObjectBase<VariableLayoutSceneStat
     }
   }
 
-  public toggleCollapsedState = () => {
-    const collapsed = !this.state.collapsed;
-    this.setState({
-      collapsed,
-    });
-    setCollapsibleFiltersState(collapsed);
-  };
-
   static Component = ({ model }: SceneComponentProps<VariableLayoutScene>) => {
     const indexScene = sceneGraph.getAncestor(model, IndexScene);
     const { controls, patterns } = indexScene.useState();
@@ -66,7 +49,6 @@ export class VariableLayoutScene extends SceneObjectBase<VariableLayoutSceneStat
     const { levelsRenderer, lineFilterRenderer } = layoutScene.useState();
     const height = useChromeHeaderHeight();
     const styles = useStyles2((theme) => getStyles(theme, height ?? 40));
-    const { collapsed } = model.useState();
 
     return (
       <div
@@ -107,24 +89,13 @@ export class VariableLayoutScene extends SceneObjectBase<VariableLayoutSceneStat
                       ) : null;
                     })}
                   </div>
-
-                  <ToolbarButton
-                    variant="canvas"
-                    icon={collapsed ? 'table-expand-all' : 'table-collapse-all'}
-                    onClick={model.toggleCollapsedState}
-                    tooltip={
-                      collapsed
-                        ? t('logs.logs-drilldown-header.expand', 'Expand filters')
-                        : t('logs.logs-drilldown-header.collapse', 'Collapse filters')
-                    }
-                  />
                 </div>
               </div>
             </div>
           )}
 
           {/* 2nd row - Combined fields (fields + metadata) + Levels - custom renderer */}
-          <div className={styles.controlsRowContainer} style={collapsed ? { display: 'none ' } : undefined}>
+          <div className={styles.controlsRowContainer}>
             {levelsRenderer && <levelsRenderer.Component model={levelsRenderer} />}
             {controls && (
               <div className={styles.filtersWrap}>
@@ -142,7 +113,7 @@ export class VariableLayoutScene extends SceneObjectBase<VariableLayoutSceneStat
 
           {/* JSON parser props and line filter vars are only visible with a local storage debug flag */}
           {getJsonParserVariableVisibility() && (
-            <div className={styles.controlsRowContainer} style={collapsed ? { display: 'none ' } : undefined}>
+            <div className={styles.controlsRowContainer}>
               {controls && (
                 <div className={styles.filtersWrap}>
                   <div className={styles.filters}>
@@ -159,7 +130,7 @@ export class VariableLayoutScene extends SceneObjectBase<VariableLayoutSceneStat
           )}
 
           {/* 3rd row - Patterns */}
-          <div className={styles.controlsRowContainer} style={collapsed ? { display: 'none ' } : undefined}>
+          <div className={styles.controlsRowContainer}>
             <PatternControls
               patterns={patterns}
               onRemove={(patterns: AppliedPattern[]) => indexScene.setState({ patterns })}
@@ -167,7 +138,7 @@ export class VariableLayoutScene extends SceneObjectBase<VariableLayoutSceneStat
           </div>
 
           {/* 4th row - Line filters - custom renderer */}
-          <div className={styles.controlsRowContainer} style={collapsed ? { display: 'none ' } : undefined}>
+          <div className={styles.controlsRowContainer}>
             {lineFilterRenderer && <lineFilterRenderer.Component model={lineFilterRenderer} />}
           </div>
         </>
