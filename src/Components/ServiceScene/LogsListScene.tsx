@@ -34,6 +34,7 @@ import { LogsVolumePanel, logsVolumePanelKey } from './LogsVolume/LogsVolumePane
 import { ServiceScene } from './ServiceScene';
 import { isEmptyLogsResult } from 'services/logsFrame';
 import {
+  getBooleanLogOption,
   getDisplayedFields,
   getLogsVisualizationType,
   getLogsVolumeOption,
@@ -44,6 +45,7 @@ import {
 export interface LogsListSceneState extends SceneObjectState {
   $timeRange?: SceneTimeRangeLike;
   canClearFilters?: boolean;
+  controlsExpanded: boolean;
   displayedFields: string[];
   error?: string;
   lineFilter?: string;
@@ -68,6 +70,8 @@ export class LogsListScene extends SceneObjectBase<LogsListSceneState> {
       ...state,
       displayedFields: [],
       visualizationType: getLogsVisualizationType(),
+      // @todo true when over 1200? getDefaultControlsExpandedMode(containerElement ?? null)
+      controlsExpanded: getBooleanLogOption('controlsExpanded', false),
     });
 
     this.addActivationHandler(this.onActivate.bind(this));
