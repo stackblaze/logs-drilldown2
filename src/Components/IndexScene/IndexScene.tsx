@@ -744,7 +744,7 @@ function getVariableSet(
   };
 
   const dsVariable = new DataSourceVariable({
-    hide: embedded ? VariableHide.hideVariable : VariableHide.dontHide,
+    hide: VariableHide.hideVariable,
     label: 'Data source',
     name: VAR_DATASOURCE,
     pluginId: 'loki',

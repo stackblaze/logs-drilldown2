@@ -16,7 +16,6 @@ import {
 import { AppliedPattern } from '../../services/variables';
 import { EmbeddedLinkScene } from '../EmbeddedLogsExploration/EmbeddedLinkScene';
 import { CustomVariableValueSelectors } from './CustomVariableValueSelectors';
-import { GiveFeedbackButton } from './GiveFeedbackButton';
 import { IndexScene } from './IndexScene';
 import {
   CONTROLS_JSON_FIELDS,
@@ -103,7 +102,6 @@ export class VariableLayoutScene extends SceneObjectBase<VariableLayoutSceneStat
                 {embedded && <ResetFiltersButton indexScene={indexScene} />}
               </div>
               <div className={styles.controlsWrapper}>
-                {!indexScene.state.embedded && <GiveFeedbackButton />}
                 <div className={styles.timeRangeDatasource}>
                   {slug !== PageSlugs.explore && (
                     <ToolbarButton

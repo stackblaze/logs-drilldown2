@@ -49,14 +49,14 @@ for (const linkConfig of linkConfigs) {
 
 plugin.exposeComponent({
   component: SuspendedOpenInLogsDrilldownButton,
-  description: 'A button that opens a logs view in the Logs Drilldown app.',
-  id: `grafana-lokiexplore-app/open-in-explore-logs-button/v1`,
-  title: 'Open in Logs Drilldown button',
+  description: 'A button that opens a logs view in Stackblaze Logs.',
+  id: `stackblaze-logs-app/open-in-explore-logs-button/v1`,
+  title: 'Open in Stackblaze Logs button',
 });
 
 plugin.exposeComponent({
   component: SuspendedEmbeddedLogsExploration,
   description: 'A component that renders a logs exploration view that can be embedded in other parts of Grafana.',
-  id: `grafana-lokiexplore-app/embedded-logs-exploration/v1`,
+  id: `stackblaze-logs-app/embedded-logs-exploration/v1`,
   title: 'Embedded Logs Exploration',
 });

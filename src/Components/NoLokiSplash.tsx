@@ -15,13 +15,13 @@ export const NoLokiSplash = () => {
         <SVG
           src={
             theme.isDark
-              ? `/public/plugins/grafana-lokiexplore-app/img/grot_loki.svg`
-              : `/public/plugins/grafana-lokiexplore-app/img/grot_loki.svg`
+              ? `/public/plugins/stackblaze-logs-app/img/grot_loki.svg`
+              : `/public/plugins/stackblaze-logs-app/img/grot_loki.svg`
           }
         />
       </div>
       <div className={styles.text}>
-        <h3 className={styles.title}>Welcome to Grafana Logs Drilldown</h3>
+        <h3 className={styles.title}>Stackblaze Logs</h3>
 
         <p>
           We noticed there is no Loki datasource configured.
@@ -31,21 +31,6 @@ export const NoLokiSplash = () => {
             Loki datasource
           </a>{' '}
           to view logs.
-        </p>
-
-        <br />
-
-        <p>
-          Click{' '}
-          <a
-            href={'https://grafana.com/docs/grafana/latest/explore/simplified-exploration/logs/'}
-            target={'_blank'}
-            className={'external-link'}
-            rel="noreferrer"
-          >
-            here
-          </a>{' '}
-          to learn more...
         </p>
       </div>
     </div>

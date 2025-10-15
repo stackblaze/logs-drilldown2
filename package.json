@@ -1,7 +1,7 @@
 {
-  "name": "grafana-lokiexplore-app",
+  "name": "stackblaze-logs-app",
   "version": "1.0.29",
-  "description": "Query less exploration of log data stored in Loki",
+  "description": "Stackblaze logs exploration plugin for Grafana",
   "scripts": {
     "build": "webpack -c ./webpack.config.ts --env production",
     "dev": "webpack -w -c ./webpack.config.ts --env development",

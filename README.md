@@ -1,6 +1,6 @@
-# Grafana Logs Drilldown
+# Stackblaze Logs
 
-The Grafana Logs Drilldown app offers a queryless experience for browsing Loki logs without the need for writing complex queries. Discover or narrow down your search by using volume and text patterns. Uncover related logs and understand patterns—all with just a few clicks. No LogQL required. With Grafana Logs Drilldown, you can:
+The Stackblaze Logs plugin offers a queryless experience for browsing Loki logs without the need for writing complex queries. Discover or narrow down your search by using volume and text patterns. Uncover related logs and understand patterns—all with just a few clicks. No LogQL required. With Stackblaze Logs, you can:
 
 - Easily find logs and log volumes for all of your services
 - Effortlessly filter service logs based on their log volumes, labels, fields, or patterns.
@@ -8,13 +8,21 @@ The Grafana Logs Drilldown app offers a queryless experience for browsing Loki l
 
 ...all without crafting a single query!
 
-- Check out the [Grafana Logs Drilldown documentation](https://grafana.com/docs/grafana/latest/explore/simplified-exploration/logs/)
-
 <img width="840" alt="Screenshot of Grafana Logs Drilldown" src="src/img/drilldown-features.png">
 
-## Installation in Your Own Grafana Instance
+## Build and Package
 
-You can install Grafana Logs Drilldown in your own Grafana instance using `grafana-cli`:
+To build and package the plugin:
+
+```sh
+make package
+```
+
+This will:
+1. Build the plugin using webpack
+2. Create a distributable zip file at `dist/stackblaze-logs-app.zip`
+
+## Installation
 
 > [!IMPORTANT]  
 > The following Loki and Grafana version and configuration are required:
@@ -33,32 +41,24 @@ You can install Grafana Logs Drilldown in your own Grafana instance using `grafa
 >
 > - Grafana v11.6+
 
-```sh
-grafana-cli --pluginUrl=https://storage.googleapis.com/integration-artifacts/grafana-lokiexplore-app/release/main/any/grafana-lokiexplore-app-main.zip plugins install grafana-lokiexplore-app
+## Configuration
+
+The datasource is now configured via URL parameters instead of dropdown selection. When accessing the plugin, pass the datasource UID as a parameter:
+
+```
+/a/stackblaze-logs-app/explore?var-ds=<datasource-uid>
 ```
 
-### Installation via environment variables
-
-If you want to [install the app in a docker container](https://grafana.com/docs/grafana/latest/setup-grafana/configure-docker/#install-plugins-in-the-docker-container), Logs Drilldown and other Drilldown plugins will be installed by default in Grafana 11.3+, so no additional configuration is required.
-
-## Test Out with Docker Compose
-
-Test out the app using the following command to spin up Grafana, Loki, and the Logs Explore App:
-
-```sh
-curl -L https://github.com/grafana/explore-logs/raw/main/scripts/run.sh | sh
+For example:
 ```
-
-This will download the https://github.com/grafana/explore-logs/blob/main/scripts/run.sh file and execute it. That shell file will download some configuration files into your `/tmp/explore-logs` directory and start the docker containers via `docker compose` from there.
-
-Once the docker container started, navigate to http://localhost:3000/a/grafana-lokiexplore-app/explore in order to use Grafana Logs Drilldown.
+/a/stackblaze-logs-app/explore?var-ds=loki-cluster-68
+```
 
 ## Getting Started
 
-1. In the main navigation bar click on Drilldown > Logs
-2. You’ll land in the service overview page that shows time series and log visualizations for all the services in your selected Loki instance.
-3. Change your data source with the drop-down on the top left.
-4. Modify your time range in two ways:
+1. Navigate to the plugin by accessing the URL with the datasource parameter: `/a/stackblaze-logs-app/explore?var-ds=<your-loki-datasource-uid>`
+2. You'll land in the service overview page that shows time series and log visualizations for all the services in your selected Loki instance.
+3. Modify your time range in two ways:
    - With the standard time range picker on the top right.
    - By clicking and dragging the time range you want to see on any time series visualization.
 5. Services are shown based on the volume of logs, and you can search for the service you want through the Search service input.
@@ -67,11 +67,9 @@ Once the docker container started, navigate to http://localhost:3000/a/grafana-l
 
 <img src="src/img/service_logs.jpg" alt="app"/>
 
-## Community Resources, Feedback, and Support
+## Support
 
-- Found a bug? Want a new feature? Feel free to open an [issue](https://github.com/grafana/loki-explore/issues/new).
-- Have a question? You can also open an issue, but for questions, it is recommended to use the [Grafana Community](https://community.grafana.com/) portal.
-- Have feedback? Please contact us through the [Grafana Logs Feedback](https://docs.google.com/forms/d/e/1FAIpQLSdcnzb0QYBqzp3RkrXIxqYKzDdw8gf0feZkOu4eZSIPyTUY1w/viewform) form.
+For questions and support, please contact the Stackblaze team.
 
 ## Development
 
