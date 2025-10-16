@@ -41,6 +41,7 @@ import {
 } from '@grafana/ui';
 
 import { areArraysEqual } from '../../services/comparison';
+import { getNamespaceFilterPrefix } from '../../services/config';
 import { CustomConstantVariable } from '../../services/CustomConstantVariable';
 import { pushUrlHandler } from '../../services/navigate';
 import { getQueryRunnerFromChildren } from '../../services/scenes';
@@ -1073,8 +1074,9 @@ function createListOfLabelsToQuery(services: string[], ds: string, searchString:
     searchString = '';
   }
 
-  // Filter to only show namespaces that start with "stackblaze"
-  const filteredServices = services.filter((service) => service.startsWith('stackblaze'));
+  // Filter to only show namespaces that start with the configured prefix
+  const namespacePrefix = getNamespaceFilterPrefix();
+  const filteredServices = services.filter((service) => service.toLowerCase().startsWith(namespacePrefix.toLowerCase()));
 
   const favoriteServicesToQuery = getFavoriteLabelValuesFromStorage(ds, labelName).filter(
     (service) => service.toLowerCase().includes(searchString.toLowerCase()) && filteredServices.includes(service)

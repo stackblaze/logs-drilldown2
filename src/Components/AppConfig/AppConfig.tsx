@@ -22,6 +22,8 @@ export type JsonData = {
   dataSource?: string;
   interval?: string;
   patternsDisabled?: boolean;
+  layerLabelName?: string;
+  namespaceFilterPrefix?: string;
 };
 
 type State = {
@@ -29,6 +31,8 @@ type State = {
   interval: string;
   isValid: boolean;
   patternsDisabled: boolean;
+  layerLabelName: string;
+  namespaceFilterPrefix: string;
 };
 
 // 1 hour minimum
@@ -46,6 +50,8 @@ const AppConfig = ({ plugin }: Props) => {
     interval: jsonData?.interval ?? '',
     isValid: isValid(jsonData?.interval ?? ''),
     patternsDisabled: jsonData?.patternsDisabled ?? false,
+    layerLabelName: jsonData?.layerLabelName ?? 'layer_name',
+    namespaceFilterPrefix: jsonData?.namespaceFilterPrefix ?? 'stackblaze',
   });
 
   const onChangeDatasource = (ds: DataSourceInstanceSettings) => {
@@ -69,6 +75,22 @@ const AppConfig = ({ plugin }: Props) => {
     setState({
       ...state,
       patternsDisabled,
+    });
+  };
+
+  const onChangeLayerLabelName = (event: ChangeEvent<HTMLInputElement>) => {
+    const layerLabelName = event.target.value.trim();
+    setState({
+      ...state,
+      layerLabelName,
+    });
+  };
+
+  const onChangeNamespaceFilterPrefix = (event: ChangeEvent<HTMLInputElement>) => {
+    const namespaceFilterPrefix = event.target.value.trim();
+    setState({
+      ...state,
+      namespaceFilterPrefix,
     });
   };
 
@@ -144,6 +166,52 @@ const AppConfig = ({ plugin }: Props) => {
           />
         </Field>
 
+        <Field
+          className={styles.marginTop}
+          description={
+            <span>
+              The Loki label name to use for layer filtering. This label will be used to populate the Layer dropdown in
+              the service detail view.
+              <br />
+              Example values: layer_name, layer, app, tier, component
+            </span>
+          }
+          label={'Layer label name'}
+        >
+          <Input
+            width={60}
+            id="layer-label-name"
+            data-testid={testIds.appConfig.layerLabelName}
+            label={`Layer label name`}
+            value={state?.layerLabelName}
+            placeholder={`layer_name`}
+            onChange={onChangeLayerLabelName}
+          />
+        </Field>
+
+        <Field
+          className={styles.marginTop}
+          description={
+            <span>
+              Only show namespaces that start with this prefix. This helps filter the namespace list to only show
+              relevant stacks.
+              <br />
+              Example values: stackblaze, myapp, prod
+            </span>
+          }
+          label={'Namespace filter prefix'}
+        >
+          <Input
+            width={60}
+            id="namespace-filter-prefix"
+            data-testid={testIds.appConfig.namespaceFilterPrefix}
+            label={`Namespace filter prefix`}
+            value={state?.namespaceFilterPrefix}
+            placeholder={`stackblaze`}
+            onChange={onChangeNamespaceFilterPrefix}
+          />
+        </Field>
+
         <div className={styles.marginTop}>
           <Button
             type="submit"
@@ -155,6 +223,8 @@ const AppConfig = ({ plugin }: Props) => {
                   dataSource: state.dataSource,
                   interval: state.interval,
                   patternsDisabled: state.patternsDisabled,
+                  layerLabelName: state.layerLabelName,
+                  namespaceFilterPrefix: state.namespaceFilterPrefix,
                 },
                 pinned,
               })
@@ -212,6 +282,8 @@ const testIds = {
     container: 'data-testid ac-container',
     datasource: 'data-testid ac-datasource-input',
     interval: 'data-testid ac-interval-input',
+    layerLabelName: 'data-testid ac-layer-label-name-input',
+    namespaceFilterPrefix: 'data-testid ac-namespace-filter-prefix-input',
     pattern: 'data-testid ac-patterns-disabled',
     submit: 'data-testid ac-submit-form',
   },

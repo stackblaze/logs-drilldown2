@@ -7,6 +7,7 @@ import { DataSourceWithBackend, getDataSourceSrv } from '@grafana/runtime';
 import { SceneComponentProps, sceneGraph, SceneObjectBase, SceneObjectState } from '@grafana/scenes';
 import { Field, Select, useStyles2 } from '@grafana/ui';
 
+import { getLayerLabelName } from '../../services/config';
 import { LokiDatasource } from '../../services/lokiDatasource';
 import { logger } from '../../services/logger';
 import { getRouteParams } from '../../services/routing';
@@ -45,22 +46,17 @@ export class LayerNameSelector extends SceneObjectBase<LayerNameSelectorState> {
       serviceScene = sceneGraph.findObject(indexScene, (obj) => obj instanceof ServiceScene) as ServiceScene | null;
       if (serviceScene) {
         ({ labelName, labelValue } = getRouteParams(serviceScene));
-        window.console.log('[LayerNameSelector] Found ServiceScene:', labelName, '=', labelValue);
-      } else {
-        window.console.log('[LayerNameSelector] ServiceScene not found in scene tree');
       }
     } catch (error) {
-      window.console.log('[LayerNameSelector] Error finding ServiceScene:', error);
+      // ServiceScene not found, don't render
     }
     
     // Don't render if we're not in a ServiceScene context or if we don't have labelName/labelValue
     if (!serviceScene || !labelName || !labelValue) {
-      window.console.log('[LayerNameSelector] Returning null - no ServiceScene or no labelName/labelValue');
       return null;
     }
     
     const options = layerOptions || [{ label: 'All layers', value: '' }];
-    window.console.log('[LayerNameSelector] Rendering dropdown with', options.length, 'options');
 
     const handleChange = (option: SelectableValue<string>) => {
       model.onLayerChange(option.value || '');
@@ -81,7 +77,6 @@ export class LayerNameSelector extends SceneObjectBase<LayerNameSelectorState> {
   };
 
   onActivate() {
-    window.console.log('[LayerNameSelector] onActivate called');
     // Check if we're in a ServiceScene context
     // ServiceScene is a sibling, not ancestor, so we need to find it from IndexScene
     try {
@@ -89,7 +84,6 @@ export class LayerNameSelector extends SceneObjectBase<LayerNameSelectorState> {
       const serviceScene = sceneGraph.findObject(indexScene, (obj) => obj instanceof ServiceScene) as ServiceScene | null;
       
       if (!serviceScene) {
-        window.console.log('[LayerNameSelector] onActivate: ServiceScene not found');
         return;
       }
 
@@ -97,14 +91,10 @@ export class LayerNameSelector extends SceneObjectBase<LayerNameSelectorState> {
       const { labelName, labelValue } = getRouteParams(serviceScene);
       
       if (labelName && labelValue) {
-        window.console.log('[LayerNameSelector] Querying for layers in', labelName, '=', labelValue);
         this.queryLayers(labelName, labelValue);
-      } else {
-        window.console.log('[LayerNameSelector] No labelName/labelValue in URL:', labelName, labelValue);
       }
     } catch (error) {
       // Not in a ServiceScene context, do nothing
-      window.console.log('[LayerNameSelector] onActivate: Error finding ServiceScene:', error);
       return;
     }
   }
@@ -114,10 +104,8 @@ export class LayerNameSelector extends SceneObjectBase<LayerNameSelectorState> {
     // The URL uses "stack" but Loki uses "namespace"
     const actualLabelName = labelName === SERVICE_UI_LABEL ? SERVICE_NAME : labelName;
     
-    // TODO: Make this configurable - might be 'layer', 'layer_id', 'app', etc.
-    const layerLabelName = 'layer_name';
-    
-    window.console.log('[LayerNameSelector] Querying for', layerLabelName, 'values with', actualLabelName, '=', labelValue);
+    // Get the layer label name from plugin config
+    const layerLabelName = getLayerLabelName();
     
     this.setState({ isLoading: true });
 
@@ -153,11 +141,7 @@ export class LayerNameSelector extends SceneObjectBase<LayerNameSelectorState> {
         ],
       };
       
-      window.console.log('[LayerNameSelector] Query options:', queryOptions);
       const results = await datasource.getTagValues(queryOptions);
-
-      window.console.log('[LayerNameSelector] Got results:', results);
-      window.console.log('[LayerNameSelector] Results type:', typeof results, 'Is array:', Array.isArray(results));
 
       if (Array.isArray(results)) {
         const options: Array<SelectableValue<string>> = [
@@ -188,7 +172,6 @@ export class LayerNameSelector extends SceneObjectBase<LayerNameSelectorState> {
       const serviceScene = sceneGraph.findObject(indexScene, (obj) => obj instanceof ServiceScene) as ServiceScene | null;
       
       if (!serviceScene) {
-        window.console.log('[LayerNameSelector] onLayerChange: ServiceScene not found');
         return;
       }
 
@@ -207,7 +190,6 @@ export class LayerNameSelector extends SceneObjectBase<LayerNameSelectorState> {
       labelsVar.setState({ filters: currentFilters });
     } catch (error) {
       // Not in a ServiceScene context, do nothing
-      window.console.log('[LayerNameSelector] onLayerChange: Error finding ServiceScene:', error);
       return;
     }
   }
