@@ -63,6 +63,7 @@ import { ConfigureVolumeError } from './ConfigureVolumeError';
 import { FavoriteServiceHeaderActionScene } from './FavoriteServiceHeaderActionScene';
 import { NoServiceSearchResults } from './NoServiceSearchResults';
 import { NoServiceVolume } from './NoServiceVolume';
+import { NoStackblazeNamespaces } from './NoStackblazeNamespaces';
 import { goToLabelDrillDownLink, SelectServiceButton } from './SelectServiceButton';
 import { ServiceSelectionPaginationScene } from './ServiceSelectionPaginationScene';
 import { ServiceSelectionTabsScene } from './ServiceSelectionTabsScene';
@@ -289,6 +290,9 @@ export class ServiceSelectionScene extends SceneObjectBase<ServiceSelectionScene
           {!isLogVolumeLoading && !volumeApiError && hasSearch && !labelsByVolume?.length && <NoServiceSearchResults />}
           {!isLogVolumeLoading && !volumeApiError && !hasSearch && !labelsByVolume?.length && (
             <NoServiceVolume labelName={selectedTab} />
+          )}
+          {!isLogVolumeLoading && !volumeApiError && !hasSearch && labelsByVolume?.length > 0 && !labelsToQuery?.length && (
+            <NoStackblazeNamespaces />
           )}
           {!(!isLogVolumeLoading && volumeApiError) && (
             <div className={styles.body}>
@@ -1061,12 +1065,15 @@ function createListOfLabelsToQuery(services: string[], ds: string, searchString:
     searchString = '';
   }
 
+  // Filter to only show namespaces that start with "stackblaze"
+  const filteredServices = services.filter((service) => service.startsWith('stackblaze'));
+
   const favoriteServicesToQuery = getFavoriteLabelValuesFromStorage(ds, labelName).filter(
-    (service) => service.toLowerCase().includes(searchString.toLowerCase()) && services.includes(service)
+    (service) => service.toLowerCase().includes(searchString.toLowerCase()) && filteredServices.includes(service)
   );
 
   // Deduplicate
-  return Array.from(new Set([...favoriteServicesToQuery, ...services]));
+  return Array.from(new Set([...favoriteServicesToQuery, ...filteredServices]));
 }
 
 function getSelectedTabFromUrl() {
