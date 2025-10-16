@@ -1,4 +1,4 @@
-.PHONY: package build clean deploy-k8s
+.PHONY: package build clean deploy-k8s release
 
 # Kubernetes deployment variables
 KUBECONFIG ?= shared-services-cluster.yaml
@@ -21,6 +21,28 @@ clean:
 	@echo "Cleaning build artifacts..."
 	rm -rf dist
 	@echo "Clean complete!"
+
+release: build
+	@echo "Creating release package..."
+	@mkdir -p release
+	@# Get current version from package.json
+	$(eval CURRENT_VERSION := $(shell grep '"version"' package.json | cut -d'"' -f4))
+	@# Increment patch version
+	$(eval NEW_VERSION := $(shell echo $(CURRENT_VERSION) | awk -F. '{print $$1"."$$2"."$$3+1}'))
+	@echo "Current version: $(CURRENT_VERSION)"
+	@echo "New version: $(NEW_VERSION)"
+	@# Update version in package.json
+	@sed -i 's/"version": "$(CURRENT_VERSION)"/"version": "$(NEW_VERSION)"/' package.json
+	@# Update version in plugin.json
+	@sed -i 's/"version": "%VERSION%"/"version": "$(NEW_VERSION)"/' src/plugin.json
+	@# Rebuild with new version
+	@echo "Rebuilding with new version..."
+	@yarn build
+	@# Create release zip
+	@cd dist && zip -r ../release/$(PLUGIN_NAME)-$(NEW_VERSION).zip .
+	@echo ""
+	@echo "✓ Release created: release/$(PLUGIN_NAME)-$(NEW_VERSION).zip"
+	@echo "Version updated from $(CURRENT_VERSION) to $(NEW_VERSION)"
 
 deploy-k8s: build
 	@echo "Deploying $(PLUGIN_NAME) to Kubernetes cluster..."

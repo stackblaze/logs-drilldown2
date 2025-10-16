@@ -28,7 +28,7 @@
         "path": "img/table.png"
       }
     ],
-    "version": "%VERSION%",
+    "version": "1.0.30",
     "updated": "%TODAY%",
     "links": []
   },

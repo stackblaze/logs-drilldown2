@@ -1,6 +1,6 @@
 {
   "name": "stackblaze-logs-app",
-  "version": "1.0.29",
+  "version": "1.0.31",
   "description": "Stackblaze logs exploration plugin for Grafana",
   "scripts": {
     "build": "webpack -c ./webpack.config.ts --env production",
