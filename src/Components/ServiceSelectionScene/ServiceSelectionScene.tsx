@@ -622,6 +622,14 @@ export class ServiceSelectionScene extends SceneObjectBase<ServiceSelectionScene
   private onActivate() {
     this.fixRequiredUrlParams();
 
+    // Hide labels filter and show logs button on explorer page
+    const indexScene = sceneGraph.getAncestor(this, IndexScene);
+    const labelsVar = getLabelsVariable(indexScene);
+    labelsVar.setState({ hide: VariableHide.hideVariable });
+    
+    const showLogsButton = sceneGraph.findByKeyAndType(indexScene, showLogsButtonSceneKey, ShowLogsButtonScene);
+    showLogsButton?.setState({ hidden: true });
+
     // Sync initial state from primary labels to local replica
     this.syncVariables();
 
@@ -849,18 +857,18 @@ export class ServiceSelectionScene extends SceneObjectBase<ServiceSelectionScene
 
       // Hide the show logs button
       const showLogsButton = sceneGraph.findByKeyAndType(this, showLogsButtonSceneKey, ShowLogsButtonScene);
-      showLogsButton.setState({ hidden: true });
+      showLogsButton?.setState({ hidden: true });
     } else {
       serviceLabelVar.changeValueTo(SERVICE_NAME);
-      // Show combobox if not aggregated metrics
+      // Keep labels and button hidden on explorer page
       labelsVar.setState({
-        hide: VariableHide.dontHide,
+        hide: VariableHide.hideVariable,
       });
       serviceLabelVar.changeValueTo(SERVICE_NAME);
 
-      // Show the show logs button
+      // Keep the show logs button hidden on explorer page
       const showLogsButton = sceneGraph.findByKeyAndType(this, showLogsButtonSceneKey, ShowLogsButtonScene);
-      showLogsButton.setState({ hidden: false });
+      showLogsButton?.setState({ hidden: true });
     }
   }
 
