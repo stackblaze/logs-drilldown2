@@ -74,7 +74,7 @@ export class ServiceSelectionTabsScene extends SceneObjectBase<ServiceSelectionT
     return (
       <TabsBar className={styles.tabs}>
         {tabOptions
-          .filter((tabLabel) => tabLabel.saved || tabLabel.active || tabLabel.value === SERVICE_NAME)
+          .filter((tabLabel) => tabLabel.value === SERVICE_NAME)
           .sort((a, b) => {
             // Service name goes first
             if (a.value === SERVICE_NAME || b.value === SERVICE_NAME) {
@@ -94,32 +94,6 @@ export class ServiceSelectionTabsScene extends SceneObjectBase<ServiceSelectionT
                 }}
                 label={truncateText(tabLabel.label, maxLabelLength, true)}
                 active={tabLabel.active}
-                suffix={
-                  tabLabel.value !== SERVICE_NAME
-                    ? (props) => {
-                        return (
-                          <>
-                            <Tooltip content={'Remove tab'}>
-                              <Icon
-                                onKeyDownCapture={(e) => {
-                                  if (e.key === 'Enter') {
-                                    model.removeSavedTab(tabLabel.value);
-                                  }
-                                }}
-                                onClick={(e) => {
-                                  // Don't bubble up to the tab component, we don't want to select the tab we're removing
-                                  e.stopPropagation();
-                                  model.removeSavedTab(tabLabel.value);
-                                }}
-                                name={'times'}
-                                className={cx(props.className)}
-                              />
-                            </Tooltip>
-                          </>
-                        );
-                      }
-                    : undefined
-                }
               />
             );
 
@@ -134,13 +108,6 @@ export class ServiceSelectionTabsScene extends SceneObjectBase<ServiceSelectionT
             }
           })}
         {data?.state === LoadingState.Loading && <Tab label={'Loading tabs'} icon={'spinner'} />}
-
-        {/* Add more tabs tab */}
-        {data?.state === LoadingState.Done && (
-          <span className={styles.addTab}>
-            <Tab onChangeTab={model.toggleShowPopover} label={'Add label'} ref={popoverRef} icon={'plus-circle'} />
-          </span>
-        )}
 
         {popover && (
           <PopoverController content={<popover.Component model={popover} />}>
