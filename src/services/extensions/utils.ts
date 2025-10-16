@@ -29,7 +29,7 @@ export function getPath(options: {
   expectedPatternsVariable?: string;
   slug: string;
 }) {
-  return `/a/grafana-lokiexplore-app/explore/${options.slug}/logs?var-ds=123abc&from=1675828800000&to=1675854000000${
+  return `/a/stackblaze-logs-app/explore/${options.slug}/logs?var-ds=123abc&from=1675828800000&to=1675854000000${
     options.expectedLabelFiltersUrlString ?? ''
   }${options.expectedMetadataString ?? ''}${options.expectedLineFiltersUrlString ?? ''}${
     options.expectedPatterns ?? ''

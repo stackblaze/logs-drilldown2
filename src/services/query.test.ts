@@ -10,7 +10,7 @@ describe('buildDataQuery', () => {
       expr: '{place="luna"}',
       queryType: 'range',
       refId: 'A',
-      supportingQueryType: 'grafana-lokiexplore-app',
+      supportingQueryType: 'stackblaze-logs-app',
     });
   });
 
@@ -20,7 +20,7 @@ describe('buildDataQuery', () => {
       expr: '{place="luna"}',
       queryType: 'range',
       refId: 'C',
-      supportingQueryType: 'grafana-lokiexplore-app',
+      supportingQueryType: 'stackblaze-logs-app',
     });
   });
 });

@@ -123,7 +123,7 @@ export function getUILabelName(labelName: string) {
  */
 export function getPrimaryLabelFromUrl(): RouteProps {
   const location = locationService.getLocation();
-  const startOfUrl = '/a/grafana-lokiexplore-app/explore';
+  const startOfUrl = '/a/stackblaze-logs-app/explore';
   const startOfUrlIndex = location.pathname.indexOf(startOfUrl);
   if (startOfUrlIndex === -1) {
     throw new Error(
