@@ -82,13 +82,14 @@ export class ActionBarScene extends SceneObjectBase<ActionBarSceneState> {
 
     return (
       <Box paddingY={0}>
-        <div className={styles.actions}>
+        {/* Share button hidden */}
+        {/* <div className={styles.actions}>
           <Stack gap={1}>
             {model.state.shareButtonScene && (
               <model.state.shareButtonScene.Component model={model.state.shareButtonScene} />
             )}
           </Stack>
-        </div>
+        </div> */}
 
         <TabsBar>
           {breakdownViewsDefinitions

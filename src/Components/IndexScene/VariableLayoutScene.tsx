@@ -74,9 +74,8 @@ export class VariableLayoutScene extends SceneObjectBase<VariableLayoutSceneStat
   static Component = ({ model }: SceneComponentProps<VariableLayoutScene>) => {
     const indexScene = sceneGraph.getAncestor(model, IndexScene);
     const { controls, patterns, embedded } = indexScene.useState();
-    const layoutScene = sceneGraph.getAncestor(model, LayoutScene);
-    const { layerNameSelector, levelsRenderer, lineFilterRenderer } = layoutScene.useState();
-    window.console.log('[VariableLayoutScene] layerNameSelector:', layerNameSelector);
+  const layoutScene = sceneGraph.getAncestor(model, LayoutScene);
+  const { layerNameSelector, levelsRenderer, lineFilterRenderer } = layoutScene.useState();
     const height = useChromeHeaderHeight();
     const { collapsed } = model.useState();
     const styles = useStyles2((theme) => getStyles(theme, height ?? 40, collapsed));

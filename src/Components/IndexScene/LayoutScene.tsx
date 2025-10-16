@@ -69,9 +69,7 @@ export class LayoutScene extends SceneObjectBase<LayoutSceneState> {
 
   public onActivate() {
     const slug = getDrilldownSlug();
-    window.console.log('[LayoutScene] onActivate, slug:', slug);
     const layerSelector = new LayerNameSelector({});
-    window.console.log('[LayoutScene] Created LayerNameSelector:', layerSelector);
     this.setState({
       layerNameSelector: layerSelector,
       levelsRenderer: new LevelsVariableScene({}),
