@@ -9,6 +9,7 @@ import { useStyles2 } from '@grafana/ui';
 import { PageSlugs } from '../../services/enums';
 import { logger } from '../../services/logger';
 import { getDrilldownSlug } from '../../services/routing';
+import { LayerNameSelector } from '../ServiceScene/LayerNameSelector';
 import { IndexScene } from './IndexScene';
 import { LevelsVariableScene } from './LevelsVariableScene';
 import { LineFilterVariablesScene } from './LineFilterVariablesScene';
@@ -18,6 +19,7 @@ interface LayoutSceneState extends SceneObjectState {
   levelsRenderer?: LevelsVariableScene;
   lineFilterRenderer?: LineFilterVariablesScene;
   variableLayout?: SceneObject;
+  layerNameSelector?: SceneObject;
 }
 
 export const CONTROLS_VARS_FIRST_ROW_KEY = 'vars-row__datasource-labels-timepicker-button';
@@ -31,6 +33,7 @@ export const CONTROLS_VARS_REFRESH = 'vars-refresh';
 export const CONTROLS_VARS_TOOLBAR = 'vars-toolbar';
 export const CONTROLS_VARS_DATASOURCE = 'vars-ds';
 export const CONTROLS_VARS_LABELS = 'vars-labels';
+export const CONTROLS_LAYER_NAME_SELECTOR = 'layer-name-selector';
 
 export class LayoutScene extends SceneObjectBase<LayoutSceneState> {
   constructor(state: Partial<LayoutSceneState>) {
@@ -66,7 +69,11 @@ export class LayoutScene extends SceneObjectBase<LayoutSceneState> {
 
   public onActivate() {
     const slug = getDrilldownSlug();
+    window.console.log('[LayoutScene] onActivate, slug:', slug);
+    const layerSelector = new LayerNameSelector({});
+    window.console.log('[LayoutScene] Created LayerNameSelector:', layerSelector);
     this.setState({
+      layerNameSelector: layerSelector,
       levelsRenderer: new LevelsVariableScene({}),
       lineFilterRenderer: new LineFilterVariablesScene({}),
       variableLayout: new VariableLayoutScene({ position: slug === PageSlugs.explore ? 'sticky' : 'relative' }),

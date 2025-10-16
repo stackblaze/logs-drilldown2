@@ -399,6 +399,8 @@ export class ServiceScene extends SceneObjectBase<ServiceSceneState> {
     const levelsVar = sceneGraph.findByKeyAndType(this, LEVELS_VARIABLE_SCENE_KEY, LevelsVariableScene);
     levelsVar.setState({ visible: true });
     getFieldsAndMetadataVariable(this).setState({ hide: VariableHide.dontHide });
+    // Hide the labels variable
+    getLabelsVariable(this).setState({ hide: VariableHide.hideVariable });
   }
 
   /**

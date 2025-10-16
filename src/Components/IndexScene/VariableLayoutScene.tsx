@@ -8,6 +8,7 @@ import { reportInteraction, useChromeHeaderHeight } from '@grafana/runtime';
 import { SceneComponentProps, SceneFlexLayout, sceneGraph, SceneObjectBase, SceneObjectState } from '@grafana/scenes';
 import { ToolbarButton, useStyles2 } from '@grafana/ui';
 
+import { logger } from '../../services/logger';
 import {
   getCollapsibleFiltersState,
   getJsonParserVariableVisibility,
@@ -74,7 +75,8 @@ export class VariableLayoutScene extends SceneObjectBase<VariableLayoutSceneStat
     const indexScene = sceneGraph.getAncestor(model, IndexScene);
     const { controls, patterns, embedded } = indexScene.useState();
     const layoutScene = sceneGraph.getAncestor(model, LayoutScene);
-    const { levelsRenderer, lineFilterRenderer } = layoutScene.useState();
+    const { layerNameSelector, levelsRenderer, lineFilterRenderer } = layoutScene.useState();
+    window.console.log('[VariableLayoutScene] layerNameSelector:', layerNameSelector);
     const height = useChromeHeaderHeight();
     const { collapsed } = model.useState();
     const styles = useStyles2((theme) => getStyles(theme, height ?? 40, collapsed));
@@ -138,8 +140,9 @@ export class VariableLayoutScene extends SceneObjectBase<VariableLayoutSceneStat
             </div>
           )}
 
-          {/* 2nd row - Combined fields (fields + metadata) + Levels - custom renderer */}
+          {/* 2nd row - Layer + Levels + Combined fields (fields + metadata) - custom renderer */}
           <div className={styles.controlsRowContainer}>
+            {layerNameSelector && <layerNameSelector.Component model={layerNameSelector} />}
             {levelsRenderer && <levelsRenderer.Component model={levelsRenderer} />}
             {controls && (
               <div className={styles.filtersWrap}>
